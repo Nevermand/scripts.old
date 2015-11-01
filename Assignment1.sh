@@ -82,16 +82,17 @@ fi
 if [[ ! -e "/etc/bind/named.conf.local" ]]; then
     sudo touch /etc/bind/named.conf.local
 else
-    sed -i "$a  zone "'$dname'" {" /etc/bind/named.conf.local
-    sed -i "$a  type master; " /etc/bind/named.conf.local
-    sed -i "$a file "/etc/bind/db.$dname";" /etc/bind/named.conf.local
-    sed -i "$a };" /etc/bind/named.conf.local
+  cat <<EOF >>/etc/bind/named.conf.local
+    zone "'$dname'" {
+        type master;
+        file "/etc/bind/db.$dname";
+    };
     
-    sed -i "$a  zone "db.192.168" {" /etc/bind/named.conf.local
-    sed -i "$a  type master; " /etc/bind/named.conf.local
-    sed -i "$a file "/etc/bind/db.192.168";" /etc/bind/named.conf.local
-    sed -i "$a };" /etc/bind/named.conf.local
-    
+    zone "168.192.in-addr.arpa" {
+        type master;
+        file "/etc/bind/db.192.168";
+    };
+EOF
 
     echo "named.conf.local [OK]"
 fi
