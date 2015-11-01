@@ -105,3 +105,10 @@ sudo rndc reload
 #=======================================
 #Test the bind service use nslookup
 #=======================================
+nslookup ns1.$dname localhost
+echo "+++++++++++++++++++++++++"
+nslookup mail.$dname localhost
+echo "+++++++++++++++++++++++++"
+nslookup 192.168.47.91 localhost
+echo "+++++++++++++++++++++++++"
+nslookup 192.168.5.95 localhost
