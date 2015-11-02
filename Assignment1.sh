@@ -11,7 +11,7 @@
 #beeb installed, if not then install it
 #=======================================
 PKG_OK=$(dpkg -s bind9 | grep -q "install ok installed"; echo $? )
-#echo $PKG_OK
+
 if [[ PKG_OK -eq 0 ]]; then
     echo "Bind OK..."
 else
@@ -24,8 +24,6 @@ fi
 # Get domain name from user
 #If get something wrong then complain
 #=======================================
-dname=localhost
-
 if [[ $1 != "" ]]; then
     dname=$1
     echo "Your domain name will be $dname "
@@ -36,10 +34,8 @@ fi
 
 #=======================================
 #Create a new zone file for new domain 
-#if exsisted then prompt
 #=======================================
 cd /etc/bind
-if [[ ! -e "db.$dname"  ]]; then
     sudo  cp ./db.empty ./db.$dname
     echo "New zone file created..."
     sudo sed -i "1c ;This is zone file for $dname" /etc/bind/db.$dname
@@ -49,10 +45,7 @@ if [[ ! -e "db.$dname"  ]]; then
     sudo sed -i "15a www\tIN\tA\t192.168.47.91" /etc/bind/db.$dname
     sudo sed -i "16a mail\tIN\tA\t192.168.59.5" /etc/bind/db.$dname
     echo "Zone file modified..."
-else 
-    echo "Domain zone file exsisted..."
-    
-fi
+
 
 
 #=======================================
@@ -60,8 +53,6 @@ fi
 #
 #=======================================
 cd /etc/bind
-if [[ ! -e "db.192.168"  ]]; then
-    echo "Create a reverse zone file ..."
     sudo cp ./db.empty ./db.192.168
     sudo sed -i "1c ;This is reverse zone file for db.192.168" /etc/bind/db.$dname
     sudo sed -i "7c @\tIN\tSOA\tns1.$dname. hostmaster.$dname. (" /etc/bind/db.$dname
@@ -69,10 +60,6 @@ if [[ ! -e "db.192.168"  ]]; then
     sudo sed -i "15c 91.47\tIN\tPTR\twww.$dname." /etc/bind/db.192.168
     sudo sed -i "16c 5.59\tIN\tPTR\tmail.$dname." /etc/bind/db.192.168
     echo "Reverse zone file modified..."
-    
-else 
-    echo "Reverse zone file exsisted..."
-fi
 
 
 #=======================================
@@ -103,13 +90,4 @@ fi
 #=======================================
 sudo rndc reload
 
-#=======================================
-#Test the bind service use nslookup
-#=======================================
-nslookup ns1.$dname localhost
-echo "+++++++++++++++++++++++++"
-nslookup mail.$dname localhost
-echo "+++++++++++++++++++++++++"
-nslookup 192.168.47.91 localhost
-echo "+++++++++++++++++++++++++"
-nslookup 192.168.5.95 localhost
+
